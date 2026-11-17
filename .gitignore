@@ -1,0 +1,11 @@
+.cpcache/
+.clj-kondo/
+.lsp/
+target/
+classes/
+.shadow-cljs/
+node_modules/
+public/js/compiled/
+*.log
+.env
+.env.local
