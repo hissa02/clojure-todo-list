@@ -1,17 +1,38 @@
+
 (ns todo.backend.core
-  (:require [reitit.ring :as ring]
-            [ring.adapter.jetty :as jetty]))
+  (:require [ring.adapter.jetty :as jetty]
+            [reitit.ring :as ring]
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [todo.backend.handler :as handler]))
 
-(defn hello-handler [_request]
-  {:status 200
-   :headers {"Content-Type" "text/plain; charset=utf-8"}
-   :body "Hello World! Backend Clojure funcionando."})
+;; Definição das rotas
+(def app-routes
+  (ring/router
+   ["/api"
+    ["/hello" {:get {:handler
+                     (fn [_request]
+                       {:status 200
+                        :headers {"Content-Type" "text/plain; charset=utf-8"}
+                        :body "Hello World! Backend Clojure funcionando."})}}]
 
+    ["/todos"
+     {:get  {:handler handler/list-todos-handler}
+      :post {:handler handler/create-todo-handler}}]]))
+
+;; Aplicação com middlewares
 (def app
   (ring/ring-handler
-   (ring/router
-    [["/api/hello" {:get hello-handler}]])))
+   app-routes
+   (ring/create-default-handler)
+   {:middleware
+    [wrap-json-response
+     [wrap-json-body {:keywords? true}]
+     wrap-params
+     wrap-keyword-params]}))
 
+;; Inicialização do servidor
 (defn -main [& _args]
-  (println "Iniciando servidor na porta 3000...")
+  (println "Servidor iniciado na porta 3000")
   (jetty/run-jetty app {:port 3000 :join? true}))
