@@ -6,7 +6,8 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [todo.backend.handler :as handler]))
+            [todo.backend.handler :as handler]
+	    [todo.backend.db :as db]))
 
 ;; Definição das rotas
 (def app-routes
@@ -41,5 +42,7 @@
 
 ;; Inicialização do servidor
 (defn -main [& _args]
+  (db/init-db!)
+  (println "Banco SQLite inicializado.")
   (println "Servidor iniciado na porta 3000")
   (jetty/run-jetty app {:port 3000 :join? true}))
