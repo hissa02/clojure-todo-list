@@ -9,3 +9,21 @@ public/js/compiled/
 *.log
 .env
 .env.local
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDE e editor
+.cider-repl-history
+.vscode/
+.calva/
+.idea/
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos compilados do frontend
+/public/js/
