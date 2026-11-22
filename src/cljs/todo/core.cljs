@@ -1,49 +1,55 @@
 
 (ns todo.core
   (:require [reagent.core :as r]
-            [reagent.dom.client :as rdom]))
+            [reagent.dom.client :as rdom]
+            [todo.api :as api]))
 
-;; Estado local das tarefas
-(defonce tarefas
-  (r/atom
-   [{:id 1
-     :title "Aprender Clojure"
-     :completed false}
-    {:id 2
-     :title "Criar minha Todo List"
-     :completed false}]))
-
+;; Estado da interface
+(defonce tarefas (r/atom []))
 (defonce texto (r/atom ""))
-(defonce proximo-id (atom 3))
+(defonce erro (r/atom nil))
+
+;; Tratamento de erros
+(defn mostrar-erro [mensagem]
+  (fn [falha]
+    (js/console.error mensagem falha)
+    (reset! erro mensagem)))
+
+;; Buscar tarefas no backend
+(defn carregar-tarefas []
+  (api/buscar-tarefas
+   (fn [resposta]
+     (let [dados (js->clj resposta :keywordize-keys true)]
+       (reset! tarefas (vec (:todos dados)))
+       (reset! erro nil)))
+   (mostrar-erro "Não foi possível carregar as tarefas.")))
 
 ;; Adicionar tarefa
 (defn adicionar-tarefa []
   (let [titulo (.trim @texto)]
     (when (not= titulo "")
-      (swap! tarefas conj
-             {:id @proximo-id
-              :title titulo
-              :completed false})
-      (swap! proximo-id inc)
-      (reset! texto ""))))
+      (api/adicionar-tarefa
+       titulo
+       (fn [_]
+         (reset! texto "")
+         (carregar-tarefas))
+       (mostrar-erro "Não foi possível adicionar a tarefa.")))))
 
 ;; Marcar ou desmarcar tarefa
 (defn alternar-tarefa [id]
-  (swap! tarefas
-         (fn [lista]
-           (mapv
-            (fn [tarefa]
-              (if (= (:id tarefa) id)
-                (update tarefa :completed not)
-                tarefa))
-            lista))))
+  (api/alternar-tarefa
+   id
+   (fn []
+     (carregar-tarefas))
+   (mostrar-erro "Não foi possível atualizar a tarefa.")))
 
 ;; Excluir tarefa
 (defn excluir-tarefa [id]
-  (swap! tarefas
-         (fn [lista]
-           (vec
-            (remove #(= (:id %) id) lista)))))
+  (api/excluir-tarefa
+   id
+   (fn []
+     (carregar-tarefas))
+   (mostrar-erro "Não foi possível excluir a tarefa.")))
 
 ;; Interface principal
 (defn app []
@@ -87,7 +93,7 @@
          :else
          "Continue assim! Você está avançando.")]]
 
-     ;; Adicionar novas tarefas
+     ;; Adicionar tarefas
      [:div.input-area
       [:input
        {:type "text"
@@ -104,13 +110,17 @@
         :aria-label "Adicionar tarefa"}
        "+"]]
 
+     ;; Mensagem de erro
+     (when @erro
+       [:p {:style {:color "#c0392b"}}
+        @erro])
+
      ;; Lista de tarefas
      [:div.section-header
       [:h3 "Suas tarefas"]
       [:span (str total " tarefas")]]
 
      (if (zero? total)
-
        [:p.empty-message
         "Nenhuma tarefa por aqui. Adicione uma!"]
 
@@ -132,8 +142,7 @@
             title]
 
            [:button.delete-button
-            {:on-click
-             #(excluir-tarefa id)
+            {:on-click #(excluir-tarefa id)
              :aria-label "Excluir tarefa"}
             "✕"]])])
 
@@ -141,7 +150,7 @@
      [:footer.footer
       "Feito com ClojureScript + Reagent"]]))
 
-;; Inicialização do React/Reagent
+;; Inicialização
 (defonce root (atom nil))
 
 (defn init []
@@ -149,4 +158,5 @@
     (reset! root
             (rdom/create-root
              (.getElementById js/document "app"))))
-  (rdom/render @root [app]))
+  (rdom/render @root [app])
+  (carregar-tarefas))

@@ -34,7 +34,7 @@
 (defn alternar-tarefa [id sucesso erro]
   (-> (js/fetch
        (str api-url "/" id "/toggle")
-       (clj->js {:method "PATCH"}))
+       (clj->js {:method "POST"}))
       (.then (fn [resposta]
                (if (.-ok resposta)
                  (sucesso)
