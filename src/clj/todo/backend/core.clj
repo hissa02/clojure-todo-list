@@ -7,9 +7,9 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.cors :refer [wrap-cors]]
             [todo.backend.handler :as handler]
-	    [todo.backend.db :as db]))
+            [todo.backend.db :as db]))
 
-;; Definição das rotas
+;; Definição das rotas.
 (def app-routes
   (ring/router
    ["/api"
@@ -22,9 +22,15 @@
 
     ["/todos"
      {:get  {:handler handler/list-todos-handler}
-      :post {:handler handler/create-todo-handler}}]]))
+      :post {:handler handler/create-todo-handler}}]
 
-;; Aplicação com middlewares
+    ["/todos/:id/toggle"
+     {:post {:handler handler/toggle-todo-handler}}]
+
+    ["/todos/:id"
+     {:delete {:handler handler/delete-todo-handler}}]]))
+
+;; Aplicação com middlewares.
 (def app
   (ring/ring-handler
    app-routes
@@ -40,7 +46,7 @@
      wrap-params
      wrap-keyword-params]}))
 
-;; Inicialização do servidor
+;; Inicialização do servidor.
 (defn -main [& _args]
   (db/init-db!)
   (println "Banco SQLite inicializado.")
