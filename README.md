@@ -1,228 +1,273 @@
-# clojure-todo-list
+# Todo List — Aplicação Full-Stack em Clojure e ClojureScript
 
+## 1. Sobre o projeto
 
+O **Todo List** é uma aplicação web desenvolvida em Clojure e ClojureScript para gerenciar tarefas, permitindo cadastrar, visualizar, concluir e excluir atividades.
 
-\# clojure-todo-list
+O projeto foi desenvolvido como atividade avaliativa da Unidade 3 da disciplina **Tópicos em Engenharia da Computação II — Programação Funcional**, da Universidade Federal do Maranhão (UFMA).
 
+A aplicação utiliza uma arquitetura full-stack, com **Clojure** no backend, **ClojureScript e Reagent** no frontend e **SQLite** para persistência dos dados.
 
+A comunicação entre as camadas ocorre por meio de uma API REST, utilizando requisições HTTP e troca de dados no formato JSON.
 
-Aplicação de lista de tarefas (Todo List), desenvolvida como projeto acadêmico utilizando Clojure no backend e ClojureScript no frontend.
+## 2. Integrantes
 
+- **Hissa Bárbara Oliveira**
+- **Yuram Almeida**
 
+## 3. Funcionalidades
 
-\## Tecnologias utilizadas
+O projeto oferece:
 
+- Cadastro de novas tarefas.
+- Visualização das tarefas armazenadas.
+- Marcação e desmarcação de tarefas concluídas.
+- Exclusão de tarefas.
+- Atualização reativa da interface.
+- Contagem de tarefas cadastradas e concluídas.
+- Barra de progresso das atividades.
+- Comunicação entre frontend e backend por API REST.
+- Persistência dos dados em SQLite, mesmo após reiniciar o servidor.
 
+## 4. Estrutura do projeto
 
-\### Backend
+```text
+clojure-todo-list/
+├── public/
+│   ├── index.html
+│   └── style.css
+├── src/
+│   ├── clj/
+│   │   └── todo/
+│   │       └── backend/
+│   │           ├── core.clj
+│   │           ├── db.clj
+│   │           └── handler.clj
+│   └── cljs/
+│       └── todo/
+│           ├── api.cljs
+│           └── core.cljs
+├── .gitignore
+├── deps.edn
+├── package.json
+├── package-lock.json
+├── shadow-cljs.edn
+└── README.md
+```
 
-\- Clojure
+### Descrição dos módulos
 
-\- Ring
+**Backend**
 
-\- Jetty
+**core.clj:** configura o servidor HTTP com Jetty, define as rotas utilizando Reitit e aplica os middlewares de comunicação.
 
-\- Reitit
+**handler.clj:** implementa os manipuladores das requisições HTTP, responsáveis por listar, cadastrar, atualizar e excluir tarefas.
 
-\- SQLite
+**db.clj:** gerencia a conexão com SQLite, a criação da tabela e as operações de persistência utilizando next.jdbc.
 
-\- next.jdbc
+**Frontend**
 
-\- Ring CORS
+**core.cljs:** implementa a interface gráfica utilizando Reagent, gerencia o estado reativo e apresenta as tarefas e os indicadores de progresso.
 
+**api.cljs:** realiza as requisições HTTP ao backend utilizando a API `fetch` do JavaScript.
 
+**index.html:** contém a estrutura HTML principal da aplicação.
 
-\### Frontend
+**style.css:** define a aparência visual da interface.
 
-\- ClojureScript
+**Arquivos de configuração**
 
-\- Reagent
+**deps.edn:** define as dependências Clojure e os comandos de execução do backend.
 
-\- Shadow-CLJS
+**shadow-cljs.edn:** configura a compilação do ClojureScript e o servidor de desenvolvimento.
 
-\- React
+**package.json:** define as dependências JavaScript e o comando de inicialização do frontend.
 
+## 5. Requisitos
 
+Para compilar e executar o projeto, é necessário ter instalados:
 
-\## Pré-requisitos
+- Java JDK 17 ou superior.
+- Clojure CLI.
+- Node.js 18 ou superior.
+- npm.
+- Git.
 
+O desenvolvimento foi realizado utilizando Java JDK 21, Clojure CLI 1.12.6 e Node.js 22.
 
+### Tecnologias utilizadas
 
-Antes de executar o projeto, instale:
+| Camada | Tecnologias |
+|---|---|
+| Backend | Clojure, Ring, Jetty e Reitit |
+| Frontend | ClojureScript, Reagent e React |
+| Compilação | Shadow-CLJS |
+| Banco de dados | SQLite e next.jdbc |
+| Comunicação | API REST, HTTP e JSON |
+| Versionamento | Git e GitHub |
 
+## 6. Instalação e execução
 
-
-\- Java JDK 17 ou superior
-
-\- Clojure CLI
-
-\- Node.js 18 ou superior
-
-\- npm
-
-
-
-\## Como executar o projeto
-
-
-
-\### 1. Clonar o repositório
-
-
+### 6.1. Clonar o repositório
 
 ```bash
-
 git clone https://github.com/hissa02/clojure-todo-list.git
+```
 
+Acesse a pasta do projeto:
+
+```bash
 cd clojure-todo-list
-
 ```
 
+### 6.2. Instalar as dependências
 
-
-\### 2. Instalar as dependências do frontend
-
-
-
-Na pasta raiz do projeto, execute:
-
-
+Na pasta principal do projeto, execute:
 
 ```bash
-
 npm install
-
 ```
 
+As dependências do Clojure são resolvidas automaticamente pelo Clojure CLI durante a execução.
 
+### 6.3. Iniciar o backend
 
-\### 3. Iniciar o backend
-
-
-
-Em um terminal, na pasta raiz do projeto, execute:
-
-
+Abra um terminal na pasta principal do projeto e execute:
 
 ```bash
+clojure -M:run
+```
 
+Em ambientes onde o comando `clj` está disponível, também é possível utilizar:
+
+```bash
 clj -M:run
-
 ```
 
+O resultado esperado é:
 
+```text
+Banco SQLite inicializado.
+Servidor iniciado na porta 3000
+```
 
-O servidor backend será iniciado na porta `3000`.
+O backend ficará disponível em:
 
+http://localhost:3000
 
+O arquivo `todos.db` e a tabela de tarefas são criados automaticamente, caso ainda não existam.
 
-O banco de dados SQLite (`todos.db`) e a tabela de tarefas são criados automaticamente na primeira inicialização.
+### 6.4. Iniciar o frontend
 
+Mantenha o terminal do backend aberto.
 
-
-\### 4. Iniciar o frontend
-
-
-
-Abra outro terminal, também na pasta raiz do projeto, e execute:
-
-
+Em um segundo terminal, na mesma pasta do projeto, execute:
 
 ```bash
-
 npm run dev
-
 ```
 
+O Shadow-CLJS realizará a compilação da aplicação.
 
-
-O frontend será disponibilizado em:
-
-
+Após a compilação, acesse:
 
 http://localhost:8000
 
+### 6.5. Utilização
 
+Com os dois servidores em execução, é possível cadastrar, visualizar, concluir e excluir tarefas diretamente pela interface.
 
-Mantenha os dois terminais abertos enquanto estiver utilizando a aplicação.
+As alterações são enviadas ao backend e armazenadas no banco SQLite.
 
+Para encerrar os servidores, pressione `Ctrl + C` em cada terminal.
 
+## 7. API REST
 
-\## API REST
+A aplicação disponibiliza os seguintes endpoints:
 
-
-
-O backend disponibiliza os seguintes endpoints:
-
-
-
-| Método | Endpoint | Descrição |
-
+| Método | Endpoint | Funcionalidade |
 |---|---|---|
-
 | GET | `/api/todos` | Lista todas as tarefas |
-
-| POST | `/api/todos` | Cria uma nova tarefa |
-
+| POST | `/api/todos` | Cadastra uma nova tarefa |
 | POST | `/api/todos/:id/toggle` | Alterna o estado de conclusão |
-
 | DELETE | `/api/todos/:id` | Exclui uma tarefa |
 
+### Exemplo de funcionamento
 
-
-\### Exemplo de criação de tarefa
-
-
-
-Requisição:
-
-
+Para cadastrar uma tarefa, o frontend envia uma requisição:
 
 ```http
-
 POST /api/todos
-
 Content-Type: application/json
-
 ```
 
-
-
-Corpo:
-
-
+Com o seguinte corpo JSON:
 
 ```json
-
 {
-
-&#x20; "title": "Estudar Clojure"
-
+  "title": "Estudar Clojure"
 }
-
 ```
 
+O backend registra a tarefa no SQLite e retorna os dados cadastrados.
 
+Para consultar as tarefas, utiliza-se:
 
-A API retorna a tarefa criada com seu identificador, estado de conclusão e data de criação.
+```http
+GET /api/todos
+```
 
+Exemplo de resposta:
 
+```json
+{
+  "todos": [
+    {
+      "id": 1,
+      "title": "Estudar Clojure",
+      "completed": false,
+      "created-at": "2026-11-22T22:48:08Z"
+    }
+  ]
+}
+```
 
-\## Banco de dados
+O campo `completed` indica se a tarefa está concluída. O campo `created-at` registra sua data e hora de criação.
 
-
+## 8. Persistência e testes
 
 O projeto utiliza SQLite para armazenar as tarefas de forma persistente.
 
+A tabela `todos` contém os seguintes campos:
 
+| Campo | Descrição |
+|---|---|
+| `id` | Identificador único da tarefa |
+| `title` | Descrição da tarefa |
+| `completed` | Estado de conclusão |
+| `created_at` | Data e hora do cadastro |
 
-O arquivo `todos.db` é criado automaticamente na raiz do projeto quando o backend é iniciado. Os dados permanecem armazenados mesmo após o encerramento do servidor.
+Durante a validação da aplicação, foram realizados testes de cadastro, listagem, conclusão e exclusão de tarefas.
 
+Também foi verificado que os dados permanecem armazenados após atualizar a página e reiniciar o servidor backend.
 
+O armazenamento é realizado no arquivo `todos.db`, localizado na pasta principal do projeto.
 
-\## Repositório
+## 9. Vídeo de apresentação
 
+**Link do vídeo:** Não disponibilizado.
 
+## 10. Referências
 
-https://github.com/hissa02/clojure-todo-list
+- [Tutorial de Clojure/ClojureScript — LambdaGeo](https://lambdageo-edu.github.io/lambdageo-tutorials/clojure/)
+- [Clojure — Documentação oficial](https://clojure.org/)
+- [ClojureScript — Documentação oficial](https://clojurescript.org/)
+- [Reagent — GitHub](https://github.com/reagent-project/reagent)
+- [Shadow-CLJS — Documentação oficial](https://shadow-cljs.github.io/docs/UsersGuide.html)
+- [SQLite — Documentação oficial](https://www.sqlite.org/docs.html)
 
+## 11. Repositório
+
+Código-fonte e histórico de desenvolvimento disponíveis em:
+
+- [GitHub — clojure-todo-list](https://github.com/hissa02/clojure-todo-list)
